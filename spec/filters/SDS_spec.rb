@@ -94,9 +94,8 @@ describe LogStash::Filters::SDS do
           },
         ].each do |test|
             sample('Message' => test['message']) do
-                expect(subject['userFullName']).to eq(test['expectedUserFullName'])
-                expect(subject['msg']).to eq test['expectedMsg']
-                expect(subject).not_to include('Message')
+                expect(subject.get('userFullName')).to eq(test['expectedUserFullName'])
+                expect(subject.get('msg')).to eq test['expectedMsg']
             end
         end
 
@@ -105,14 +104,13 @@ describe LogStash::Filters::SDS do
             'Category' => 'Installation de la Suite Stormshield Data Security',
             'EventID' => '301',
         ) do
-            expect(subject['Category']).to eq('Administration')
+            expect(subject.get('Category')).to eq('Administration')
         end
 
         # Test a full syslog message
         sample('Message' => "id=datasecurity AccountName=\"Amelia\" AccountType=User Category=\"Directory administration\" Channel=\"Stormshield Data Security\" Domain=domain.local EventID=728 EventReceivedTime=1471940690 EventTime=\"2016-08-23 08:24:50\" EventType=INFO HostIP=\"10.0.100.11\" Hostname=\"pc11\" Keywords=36028797018963968 Message=\"Stormshield Data Security Login: Amelia\r\rDescription:\rCOMMON_NAME_REVOKE option: Value: ALL Access FALSE\" Opcode=Informations ProcessID=0 RecordNumber=541 Severity=INFO SeverityValue=2 SourceModuleName=SDS_events SourceModuleType=im_msvistalog SourceName=\"Administration\" Task=6 ThreadID=0 UserID=S-1-5-21-1986321934-3787518990-59020978-1000\"") do
-            expect(subject['userFullName']).to eq('Amelia')
-            expect(subject['msg']).to eq 'COMMON_NAME_REVOKE option: Value: ALL Access FALSE'
-            expect(subject).not_to include('Message')
+            expect(subject.get('userFullName')).to eq('Amelia')
+            expect(subject.get('msg')).to eq 'COMMON_NAME_REVOKE option: Value: ALL Access FALSE'
         end
 
         # Test categories from event id
@@ -157,13 +155,13 @@ describe LogStash::Filters::SDS do
           "50899" => "Driver message"
         }.each do |eventID, category|
           sample('EventID' => eventID) do
-              expect(subject['Category']).to eq(category)
+              expect(subject.get('Category')).to eq(category)
           end
         end
 
         # Test unmamaged category
         sample('EventID' => '50900', 'Category' => unmanagedCategory) do
-          expect(subject['Category']).to eq("Umanaged category: '" + unmanagedCategory + "'")
+          expect(subject.get('Category')).to eq("Umanaged category: '" + unmanagedCategory + "'")
         end
 
         # Test file events
@@ -210,7 +208,7 @@ describe LogStash::Filters::SDS do
           "18314" => "These coworkers have been removed successfully from the file 'A fake file':%r%3.",
         }.each do |eventID, message|
           sample('EventID' => eventID, 'Message' => "Stormshield Data Security Login: A fake login\r\rDescription:\r" + message) do
-              expect(subject['file']).to eq('A fake file')
+              expect(subject.get('file')).to eq('A fake file')
           end
         end
 

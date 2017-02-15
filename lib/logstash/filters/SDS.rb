@@ -78,12 +78,12 @@ class LogStash::Filters::SDS < LogStash::Filters::Base
     public
 
     def filter(event)
-        eventId = event['EventID']
+        eventId = event.get('EventID')
         # Try to extract the header/description
-        m = @re_msg.match(event['Message'])
+        m = @re_msg.match(event.get('Message'))
         if m
-            event['userFullName'] = m['userFullName']
-            event['msg'] = m['description']
+            event.set('userFullName', m['userFullName'])
+            event.set('msg', m['description'])
             event.remove('Message')
         end
 
@@ -91,34 +91,36 @@ class LogStash::Filters::SDS < LogStash::Filters::Base
         if eventId
             eventId = eventId.to_i
             case eventId
-            when 300..699 then event['Category'] = 'Administration'
-            when 700..1099 then event['Category'] = 'Directory administration'
-            when 1100..1499  then event['Category'] = 'CRL administration'
-            when 8300..8699  then event['Category'] = 'Volume management'
-            when 18_300..18_699 then event['Category'] = 'Encryption / Decryption to'
-            when 18_700..19_099 then event['Category'] = 'Encryption / Decryption'
-            when 25_300..25_699 then event['Category'] = 'Start / Stop'
-            when 25_700..26_099 then event['Category'] = 'Network'
-            when 26_100..26_499 then event['Category'] = 'Card Extension'
-            when 31_300..31_699 then event['Category'] = 'Login / Logout'
-            when 31_700..32_099 then event['Category'] = 'Account administration'
-            when 32_100..32_499 then event['Category'] = 'Key management'
-            when 32_500..32_899 then event['Category'] = 'Keystore administration'
-            when 39_300..39_699 then event['Category'] = 'Send / Receive'
-            when 47_300..47_499 then event['Category'] = 'Sign / Signature'
-            when 49_300..49_699 then event['Category'] = 'Rule management'
-            when 49_700..50_099 then event['Category'] = 'Encryption / Decryption'
-            when 50_100..50_499 then event['Category'] = 'Backup / Restore'
-            when 50_500..50_899 then event['Category'] = 'Driver message'
+            when 300..699 then event.set('Category', 'Administration')
+            when 700..1099 then event.set('Category', 'Directory administration')
+            when 1100..1499  then event.set('Category', 'CRL administration')
+            when 8300..8699  then event.set('Category', 'Volume management')
+            when 18_300..18_699 then event.set('Category', 'Encryption / Decryption to')
+            when 18_700..19_099 then event.set('Category', 'Encryption / Decryption')
+            when 25_300..25_699 then event.set('Category', 'Start / Stop')
+            when 25_700..26_099 then event.set('Category', 'Network')
+            when 26_100..26_499 then event.set('Category', 'Card Extension')
+            when 31_300..31_699 then event.set('Category', 'Login / Logout')
+            when 31_700..32_099 then event.set('Category', 'Account administration')
+            when 32_100..32_499 then event.set('Category', 'Key management')
+            when 32_500..32_899 then event.set('Category', 'Keystore administration')
+            when 39_300..39_699 then event.set('Category', 'Send / Receive')
+            when 47_300..47_499 then event.set('Category', 'Sign / Signature')
+            when 49_300..49_699 then event.set('Category', 'Rule management')
+            when 49_700..50_099 then event.set('Category', 'Encryption / Decryption')
+            when 50_100..50_499 then event.set('Category', 'Backup / Restore')
+            when 50_500..50_899 then event.set('Category', 'Driver message')
             else
-                event['Category'] = "Umanaged category: '" + event['Category'] + "'"
+                event.set('Category', "Umanaged category: '" + event.get('Category') + "'")
             end
 
             # Capture file or folder name for file events
             m = nil
             if @eventId_files_set.include?(eventId)
-                m = @re_file.match(event['msg'])
-                event['file'] = m['File'] if m
+                m = @re_file.match(event.get('msg'))
+                if m
+                  event.set('file', m['File'])
+                end
             end
         end
 

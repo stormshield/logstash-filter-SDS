@@ -10,7 +10,8 @@ class LogStash::Filters::SDS < LogStash::Filters::Base
 
     def register
         @re_msg = /(?:Stormshield Data Security Login|Identifiant Stormshield Data Security)\s?:\s(?<userFullName>.*[^(?:\s{2}|\r{2})])(?:\s{2}|\r{2}|(?:\\\\r){2})Description\s?:(?:\s|\r|\\\\r)?(?<description>[^"]*)/m
-        @re_file = /(?:File|Folder|fichier|dossier|file|folder)\s*'(?<File>.*)'/
+        @re_file = /(?:File|fichier|file)\s*'(?<File>.*)'/
+        @re_folder = /(?:Folder|dossier|folder)\s*'(?<Folder>.*)'/
         @eventId_files_set = Set.new [
             # "L'utilisateur a chiffré avec succès le fichier '%2' en mode auto-déchiffrable."
             # "File '%2' has been successfully encrypted (auto-decrypt mode)."
@@ -18,36 +19,18 @@ class LogStash::Filters::SDS < LogStash::Filters::Base
             # "Le chiffrement du fichier '%2' en mode auto-déchiffrable a échoué."
             # "File '%2' encryption (auto-decrypt mode) has failed."
             18_301,
-            # "L'utilisateur a chiffré avec succès le dossier '%2' en mode auto-déchiffrable."
-            # "Folder '%2' has been successfully encrypted (auto-decrypt mode)."
-            18_302,
-            # "Le chiffrement du dossier '%2' en mode auto-déchiffrable a échoué."
-            # "Folder '%2' decryption (auto-decrypt mode) has failed."
-            18_303,
             # "File '%2' was successfully encrypted (SmartFILE? mode)."
             # "L'utilisateur a chiffré avec succès le fichier '%2' en utilisant SecurityBOX? SmartFile?."
             18_304,
             # "File '%2' encryption (SmartFILE? mode) has failed."
             # "Le chiffrement du fichier '%2' en utilisant SecurityBOX? SmartFile? a échoué."
             18_305,
-            # "Folder '%2' has been successfully encrypted (SmartFILE? mode)."
-            # "L'utilisateur a chiffré avec succès le dossier '%2' en utilisant SecurityBOX? SmartFile?."
-            18_306,
-            # "Folder '%2' encryption (SmartFILE? mode) failed."
-            # "Le chiffrement du dossier '%2' en utilisant SecurityBOX? SmartFile? a échoué."
-            18_307,
             # "L'utilisateur a chiffré avec succès le fichier '%2' pour les correspondants suivants : %r%3."
             # "File '%2' has been successfully encrypted for the following recipients: %r%3."
             18_308,
             # "File '%2' encryption has failed for the following recipients: %r%3."
             # "Le chiffrement du fichier '%2' pour les correspondants suivants a échoué : %r%3."
             18_309,
-            # "L'utilisateur a chiffré avec succès le dossier '%2' pour les correspondants suivants : %r%3."
-            # "Folder '%2' has been successfully encrypted for the following recipients: %r%3."
-            18_310,
-            # "Le chiffrement du dossier '%2' pour les correspondants suivants a échoué: %r%3."
-            # "Folder '%2' encryption has failed for the following recipients: %r%3."
-            18_311,
             # "Les collaborateurs suivants ont été ajoutés avec succès au fichier '%2' :%r%3."
             # "These coworkers have been added successfully to the file '%2' :%r%3."
             18_312,
@@ -72,6 +55,27 @@ class LogStash::Filters::SDS < LogStash::Filters::Base
             # "Le déchiffrement du fichier '%2' a échoué."
             # "File '%2' decryption has failed."
             18_703
+        ]
+
+        @eventId_folders_set = Set.new [
+            # "L'utilisateur a chiffré avec succès le dossier '%2' en mode auto-déchiffrable."
+            # "Folder '%2' has been successfully encrypted (auto-decrypt mode)."
+            18_302,
+            # "Le chiffrement du dossier '%2' en mode auto-déchiffrable a échoué."
+            # "Folder '%2' decryption (auto-decrypt mode) has failed."
+            18_303,
+            # "Folder '%2' has been successfully encrypted (SmartFILE? mode)."
+            # "L'utilisateur a chiffré avec succès le dossier '%2' en utilisant SecurityBOX? SmartFile?."
+            18_306,
+            # "Folder '%2' encryption (SmartFILE? mode) failed."
+            # "Le chiffrement du dossier '%2' en utilisant SecurityBOX? SmartFile? a échoué."
+            18_307,
+            # "L'utilisateur a chiffré avec succès le dossier '%2' pour les correspondants suivants : %r%3."
+            # "Folder '%2' has been successfully encrypted for the following recipients: %r%3."
+            18_310,
+            # "Le chiffrement du dossier '%2' pour les correspondants suivants a échoué: %r%3."
+            # "Folder '%2' encryption has failed for the following recipients: %r%3."
+            18_311
         ]
     end # def register
 
@@ -120,6 +124,11 @@ class LogStash::Filters::SDS < LogStash::Filters::Base
                 m = @re_file.match(event.get('msg'))
                 if m
                   event.set('file', m['File'])
+                end
+            elsif @eventId_folders_set.include?(eventId)
+                m = @re_folder.match(event.get('msg'))
+                if m
+                  event.set('folder', m['Folder'])
                 end
             end
         end

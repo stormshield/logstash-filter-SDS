@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'spec_helper'
+require 'logstash/devutils/rspec/spec_helper'
 require 'logstash/filters/SDS'
 
 describe LogStash::Filters::SDS do
@@ -176,25 +176,13 @@ describe LogStash::Filters::SDS do
           "18308" => "File 'A fake file' has been successfully encrypted for the following recipients: %r%3.",
           "18700" => "File 'A fake file' has been successfully encrypted.",
           "18304" => "File 'A fake file' was successfully encrypted (SmartFILE? mode).",
-          "18303" => "Folder 'A fake file' decryption (auto-decrypt mode) has failed.",
-          "18307" => "Folder 'A fake file' encryption (SmartFILE? mode) failed.",
-          "18311" => "Folder 'A fake file' encryption has failed for the following recipients: %r%3.",
-          "18302" => "Folder 'A fake file' has been successfully encrypted (auto-decrypt mode).",
-          "18306" => "Folder 'A fake file' has been successfully encrypted (SmartFILE? mode).",
-          "18310" => "Folder 'A fake file' has been successfully encrypted for the following recipients: %r%3.",
           "18313" => "L'ajout des collaborateurs suivants au fichier 'A fake file' a échoué :%r%3.",
-          "18302" => "L'utilisateur a chiffré avec succès le dossier 'A fake file' en mode auto-déchiffrable.",
-          "18306" => "L'utilisateur a chiffré avec succès le dossier 'A fake file' en utilisant SecurityBOX? SmartFile?.",
-          "18310" => "L'utilisateur a chiffré avec succès le dossier 'A fake file' pour les correspondants suivants : %r%3.",
           "18300" => "L'utilisateur a chiffré avec succès le fichier 'A fake file' en mode auto-déchiffrable.",
           "18304" => "L'utilisateur a chiffré avec succès le fichier 'A fake file' en utilisant SecurityBOX? SmartFile?.",
           "18308" => "L'utilisateur a chiffré avec succès le fichier 'A fake file' pour les correspondants suivants : %r%3.",
           "18700" => "L'utilisateur a chiffré le fichier 'A fake file' avec succès.",
           "18702" => "L'utilisateur a déchiffré le fichier 'A fake file' avec succès.",
           "18315" => "La suppression des collaborateurs suivants du fichier 'A fake file' a échoué : %r%3.",
-          "18303" => "Le chiffrement du dossier 'A fake file' en mode auto-déchiffrable a échoué.",
-          "18307" => "Le chiffrement du dossier 'A fake file' en utilisant SecurityBOX? SmartFile? a échoué.",
-          "18311" => "Le chiffrement du dossier 'A fake file' pour les correspondants suivants a échoué: %r%3.",
           "18701" => "Le chiffrement du fichier 'A fake file' a échoué.",
           "18301" => "Le chiffrement du fichier 'A fake file' en mode auto-déchiffrable a échoué.",
           "18305" => "Le chiffrement du fichier 'A fake file' en utilisant SecurityBOX? SmartFile? a échoué.",
@@ -209,6 +197,26 @@ describe LogStash::Filters::SDS do
         }.each do |eventID, message|
           sample('EventID' => eventID, 'Message' => "Stormshield Data Security Login: A fake login\r\rDescription:\r" + message) do
               expect(subject.get('file')).to eq('A fake file')
+          end
+        end
+
+        # Test folder events
+        {
+          "18303" => "Folder 'A fake folder' decryption (auto-decrypt mode) has failed.",
+          "18307" => "Folder 'A fake folder' encryption (SmartFILE? mode) failed.",
+          "18311" => "Folder 'A fake folder' encryption has failed for the following recipients: %r%3.",
+          "18302" => "Folder 'A fake folder' has been successfully encrypted (auto-decrypt mode).",
+          "18306" => "Folder 'A fake folder' has been successfully encrypted (SmartFILE? mode).",
+          "18310" => "Folder 'A fake folder' has been successfully encrypted for the following recipients: %r%3.",
+          "18302" => "L'utilisateur a chiffré avec succès le dossier 'A fake folder' en mode auto-déchiffrable.",
+          "18306" => "L'utilisateur a chiffré avec succès le dossier 'A fake folder' en utilisant SecurityBOX? SmartFile?.",
+          "18310" => "L'utilisateur a chiffré avec succès le dossier 'A fake folder' pour les correspondants suivants : %r%3.",
+          "18303" => "Le chiffrement du dossier 'A fake folder' en mode auto-déchiffrable a échoué.",
+          "18307" => "Le chiffrement du dossier 'A fake folder' en utilisant SecurityBOX? SmartFile? a échoué.",
+          "18311" => "Le chiffrement du dossier 'A fake folder' pour les correspondants suivants a échoué: %r%3.",
+        }.each do |eventID, message|
+          sample('EventID' => eventID, 'Message' => "Stormshield Data Security Login: A fake login\r\rDescription:\r" + message) do
+              expect(subject.get('folder')).to eq('A fake folder')
           end
         end
 

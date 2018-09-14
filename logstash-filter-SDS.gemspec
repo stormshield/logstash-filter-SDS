@@ -1,12 +1,12 @@
 Gem::Specification.new do |s|
   s.name = 'logstash-filter-SDS'
   s.version = '1.0.0'
-  s.licenses = ['Stormshield']
+  s.licenses = ['Apache License (2.0)']
   s.summary = "SDS filter."
   s.description = "SDS filter"
   s.authors = ["Stormshield"]
   s.email = 'svc@stormshield.eu'
-  s.homepage = "http://www.stormshield.eu"
+  s.homepage = "https://www.stormshield.eu"
   s.require_paths = ["lib"]
 
   # Files

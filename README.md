@@ -1,5 +1,11 @@
 # Logstash Stormshield SDS Plugin
 
+## Documentation
+
+This logstash plugin provides support for Stormshield Data Security logs:
+ - Add human-readable category based on event ID
+ - Extract filename and folder name from message in two keys _file_ and _folder_
+
 ## Developing
 
 ### 1. Plugin Developement and Testing
@@ -17,13 +23,11 @@ bundle install
 #### Test
 
 - Update your dependencies
-
 ```sh
 bundle install
 ```
 
 - Run tests
-
 ```sh
 bundle exec rspec
 ```
@@ -34,16 +38,19 @@ bundle exec rspec
 
 - Edit Logstash `Gemfile` and add the local plugin path, for example:
 ```ruby
-gem "logstash-filter-awesome", :path => "/your/local/logstash-filter-awesome"
+gem "logstash-filter-SDS", :path => "/your/local/logstash-filter-SDS"
 ```
+
 - Install plugin
 ```sh
 bin/plugin install --no-verify
 ```
+
 - Run Logstash with your plugin
 ```sh
-bin/logstash -e 'filter {awesome {}}'
+bin/logstash -e 'filter {SDS {}}'
 ```
+
 At this point any modifications to the plugin code will be applied to this local Logstash setup. After modifying the plugin, simply rerun Logstash.
 
 #### 2.2 Run in an installed Logstash
@@ -52,16 +59,17 @@ You can use the same **2.1** method to run your plugin in an installed Logstash 
 
 - Build your plugin gem
 ```sh
-gem build logstash-filter-awesome.gemspec
+gem build logstash-filter-SDS.gemspec
 ```
+
 - Install the plugin from the Logstash home
 ```sh
-bin/plugin install /your/local/plugin/logstash-filter-awesome.gem
+bin/plugin install /your/local/plugin/logstash-filter-SDS.gem
 ```
+
 - Start Logstash and proceed to test the plugin
 
 - Run tests
-
 ```sh
 bundle exec rspec
 ```
@@ -72,16 +80,19 @@ bundle exec rspec
 
 - Edit Logstash `Gemfile` and add the local plugin path, for example:
 ```ruby
-gem "logstash-filter-awesome", :path => "/your/local/logstash-filter-awesome"
+gem "logstash-filter-SDS", :path => "/your/local/logstash-filter-SDS"
 ```
+
 - Install plugin
 ```sh
 bin/plugin install --no-verify
 ```
+
 - Run Logstash with your plugin
 ```sh
-bin/logstash -e 'filter {awesome {}}'
+bin/logstash -e 'filter {SDS {}}'
 ```
+
 At this point any modifications to the plugin code will be applied to this local Logstash setup. After modifying the plugin, simply rerun Logstash.
 
 #### 2.2 Run in an installed Logstash
@@ -90,10 +101,12 @@ You can use the same **2.1** method to run your plugin in an installed Logstash 
 
 - Build your plugin gem
 ```sh
-gem build logstash-filter-awesome.gemspec
+gem build logstash-filter-SDS.gemspec
 ```
+
 - Install the plugin from the Logstash home
 ```sh
-bin/plugin install /your/local/plugin/logstash-filter-awesome.gem
+bin/plugin install /your/local/plugin/logstash-filter-SDS.gem
 ```
+
 - Start Logstash and proceed to test the plugin

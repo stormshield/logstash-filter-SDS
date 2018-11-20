@@ -1,4 +1,9 @@
-target/**
+*.swp
+*.gem
 Gemfile.lock
 .bundle
-vendor
+.idea
+*~
+.ruby-version
+target/
+vendor/
